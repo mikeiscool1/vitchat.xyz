@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
+require("./app");
+require("./db");
+require("./http/auth");
+require("./http/avatars");
+require("./http/messages");
+require("./http/pages");
+require("./http/users");
+require("./ws");
+process.on('uncaughtException', console.error);

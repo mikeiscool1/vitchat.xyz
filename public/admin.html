@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/resources/favicon.png">
+    <title>Chat</title>
+</head>
+<body>
+  <ul id="grid"></ul>
+
+  <div id="ban-modal" class="center modal d-none">
+    <h1>Ban <span id="ban-modal-username"></span></h1>
+    <p>Reason</p>
+    <textarea id="ban-modal-reason" rows="5"></textarea>
+    <p>Duration</p>
+    <input type="text" id="ban-modal-duration">
+    <p id="ban-user-error" class="error"></p>
+    <div class="modal-buttons">
+      <button class="ban-btn" id="ban">Ban</button>
+      <button class="cancel-modal-button" id="cancel-ban">Cancel</button>
+    </div>
+  </div>
+
+  <div id="unban-modal" class="center modal d-none">
+    <h1>Unban <span id="unban-modal-username"></span></h1>
+    <p>Ban reason: <span id="unban-modal-reason"></span></p>
+    <p>Ban expires: <span id="unban-modal-expires"></span></p>
+    <p id="unban-user-error" class="error"></p>
+    <div class="modal-buttons">
+      <button class="unban-btn" id="unban">Unban</button>
+      <button class="cancel-modal-button" id="cancel-unban">Cancel</button>
+    </div>
+  </div>
+  <script src="/js/admin.js" type="module"></script>
+</body>
+</html>

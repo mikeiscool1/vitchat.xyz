@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/settings.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/resources/favicon.png">
+    <title>Chat</title>
+</head>
+<body>
+  <div id="container" class="center">
+    <h1>Settings</h1>
+    <div id="user">
+      <img id="user-avatar" src="/default_pfp">
+      <span id="user-username" class="username"></span>
+    </div>
+    <hr>
+
+    <div id="change-buttons">
+      <button id=change-username>Change Username</button>
+      <button id="change-password">Change Password</button>
+      <button id="change-avatar">Change Avatar</button>
+    </div>
+
+    <br>
+    <button id="logout"><a href="/logout">Log Out</a></button>
+  </div>
+
+  <input type="file" id="file-input" class="d-none" accept="image/*">
+  <!-- modals -->
+  <!-- change username -->
+  <div id="change-username-modal" class="center modal d-none">
+    <h1>Change Username</h1>
+    <p>New Username</p>
+    <input id="new-username">
+    <p>Password</p>
+    <input id="new-username-password" type="password">
+    <p id="change-username-error" class="error"></p>
+    <div class="modal-buttons">
+      <button class="update-modal-button" id="update-username">Update</button>
+      <button class="cancel-modal-button" id="cancel-username">Cancel</button>
+    </div>
+  </div>
+
+  <!-- change password -->
+  <div id="change-password-modal" class="center modal d-none">
+    <h1>Change Password</h1>
+    <p>Old Password</p>
+    <input id="new-password-old-password" type="password">
+    <p>New Password</p>
+    <input id="new-password-new-password" type="password">
+    <p>Confirm New Password</p>
+    <input id="new-password-confirm-password" type="password">
+    <p id="change-password-error" class="error"></p>
+    <div class="modal-buttons">
+      <button class="update-modal-button" id="update-password">Update</button>
+      <button class="cancel-modal-button" id="cancel-password">Cancel</button>
+    </div>
+  </div>
+
+  <script type="module" src="/js/settings.js"></script>
+</body>
+</html>

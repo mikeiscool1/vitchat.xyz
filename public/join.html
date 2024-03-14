@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/resources/favicon.png">
+    <title>Chat</title>
+</head>
+<body>
+  <div id="center">
+    <h1>Create Account</h1>
+    <form onsubmit="registerInput(); return false">
+      <div class="txt_field">
+        <input type="text" required id="name">
+        <span></span>
+        <label>Username</label>
+      </div>
+      <div class="txt_field">
+        <input type="password" required id="password">
+        <span></span>
+        <label>Password</label>
+      </div>
+      <div class="txt_field">
+        <input type="password" required id="password-confirmation">
+        <span></span>
+        <label>Confirm Password</label>
+      </div>
+      <p id="error"></p>
+      <button id="submit">Create Account</button>
+      <div class="redirect_link">
+        Already have an account? <a href="/login">Log in</a>
+      </div>
+    </form>
+  </div>
+
+  <script src="/js/join.js"></script>
+</body>
+</html>

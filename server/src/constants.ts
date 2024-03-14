@@ -1,0 +1,46 @@
+export enum Opcodes {
+  Dispatch = 0, // receive
+  Heartbeat = 1, // send
+  HeartbeatACK = 3, // receive
+  Identify = 4 // send
+}
+
+export enum CloseCodes {
+  UnknownError = 4000,
+  UnknownOpcode = 4001,
+  DecodeError = 4002,
+  NotAuthenticated = 4003,
+  AuthenticationFailed = 4004,
+  Forbidden = 4005,
+  AlreadyAuthenticated = 4006,
+  RateLimited = 4007,
+  Forced = 4008
+}
+
+export enum EventTypes {
+  Ready = 0,
+  MessageCreate = 1,
+  MessageEdit = 2,
+  MessageDelete = 3,
+  PresenceUpdate = 4,
+  TypingStart = 5,
+  UserUpdate = 6
+}
+
+export enum HttpStatusCodes {
+  Ok = 200,
+  Created = 201,
+  NoContent = 204,
+  BadRequest = 400,
+  Unauthorized = 401,
+  Forbidden = 403,
+  NotFound = 404,
+  Conflict = 409,
+  PayloadTooLarge = 413,
+  RateLimited = 429
+}
+
+export const maxUsernameLength = 32;
+export const heartbeatInterval = 20000;
+export const maxContentLength = 2000;
+export const messagesPerFetch = 100;

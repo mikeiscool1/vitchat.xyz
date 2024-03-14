@@ -1,0 +1,62 @@
+#container {
+  width: min(400px, 80vw);
+  background-color: #303060;
+  border-radius: 10px;
+  padding: 10px 20px;
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+#user {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+#user-avatar {
+  height: 50px;
+  border-radius: 100%;
+}
+
+#user-username {
+  font-size: 20px;
+  margin-left: 10px;
+}
+
+#username-edit {
+  background-color: gray;
+  border-radius: 5px;
+  padding: 5px 10px 5px 10px;
+  cursor: pointer;
+}
+
+#username-edit:hover {
+  background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
+}
+
+#change-buttons {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 50px;
+  justify-content: center;
+}
+
+#change-buttons > button {
+  margin-right: 5px;
+  background-color: gray;
+  height: fit-content;
+  font-size: 15px; 
+  padding: 5px;
+}
+
+#logout {
+  background-color: rgb(205, 1, 1);
+}
+
+#logout > a {
+  text-decoration: none;
+  color: white;
+}
+
+.update-modal-button {
+  background-color: #005eff
+}
