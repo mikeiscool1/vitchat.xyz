@@ -181,6 +181,8 @@ function connect() {
           message.remove();
           messageGroup.children[2].classList.add('first');
         }
+
+        break;
       }
       case EventTypes.MessageEdit: {
         const message = document.querySelector(`[data-id="${payload.id}"]`);
@@ -190,10 +192,14 @@ function connect() {
           messagesContainer.scrollTop + messagesContainer.clientHeight === messagesContainer.scrollHeight;
         message.innerHTML = format(encodeHtml(payload.content));
         if (atBottomOfMessages) scrollBottom(messagesContainer);
+
+        break;
       }
       case EventTypes.TypingStart: {
         if (payload.username === me.username) return;
         typingUsers.set(payload.username, Date.now());
+
+        break;
       }
     }
   });
