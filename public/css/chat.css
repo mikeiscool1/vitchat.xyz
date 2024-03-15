@@ -196,6 +196,7 @@
 
 #member-list > div > li > img {
   height: 30px;
+  width: 30px;
   margin-right: 10px;
   border-radius: 100%;
 }
@@ -219,6 +220,7 @@
 
 #me-avatar {
   height: 30px;
+  width: 30px;
   margin-right: 10px;
   border-radius: 100%;
 }
@@ -237,6 +239,7 @@
 
 .avatar {
   height: 40px;
+  width: 40px;
   border-radius: 100%;
 }
 
