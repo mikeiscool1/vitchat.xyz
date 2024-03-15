@@ -31,12 +31,12 @@ model message {
   id        BigInt @id
   author_id BigInt
   content   String
-  author    user   @relation(fields: [author_id], references: [id])
+  author    user   @relation(fields: [author_id], references: [id], onDelete: Cascade)
 }
 
 model avatar {
   user_id   BigInt @id
   type      String
   data      Bytes
-  user      user   @relation(fields: [user_id], references: [id])
+  user      user   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
