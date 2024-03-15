@@ -238,7 +238,6 @@
 .avatar {
   height: 40px;
   border-radius: 100%;
-  cursor: pointer;
 }
 
 .username {
@@ -248,7 +247,6 @@
   max-width: calc(100% - 120px);
   overflow-x: hidden;
   text-overflow: ellipsis;
-  cursor: pointer;
 }
 
 .first {

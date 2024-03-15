@@ -1,6 +1,9 @@
-const error = document.getElementById('error');
+import { moment } from "./util.js";
 
-async function registerInput() {
+const error = document.getElementById('error');
+const dateEmbedReg = /<date:([A-z0-9:\-.]{1,})>/;
+
+export async function registerInput() {
   const username = document.getElementById('name').value.trim();
   const password = document.getElementById('password').value;
 
@@ -14,6 +17,12 @@ async function registerInput() {
 
   if (!req.ok) {
     const res = await req.json();
+    const embededDate = res.message.match(dateEmbedReg);
+    if (embededDate) {
+      const datePart = embededDate[1];
+      res.message = res.message.slice(0, embededDate.index) + moment(new Date(datePart)) + res.message.slice(embededDate.index + embededDate[0].length);
+    }
+
     error.innerHTML = res.message;
     return;
   }
@@ -24,3 +33,9 @@ async function registerInput() {
   if (redirectURI) window.location.href = `/${redirectURI}`;
   else window.location.href = '/chat';
 }
+
+const form = document.getElementById('form');
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  registerInput();
+})

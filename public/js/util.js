@@ -1,3 +1,8 @@
+/**
+ * 
+ * @param {Date} date 
+ * @returns {string}
+ */
 export function moment(date) {
   const now = new Date();
   const dayTime = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });

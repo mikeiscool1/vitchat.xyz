@@ -16,6 +16,8 @@ if (!token) window.location.href = '/login';
  * @type {User}
  */
 let me;
+// when a user updates their avatar, their avatar URLs must use a timestamp due to caching
+const userAvatarUpdateTimestamps = new Map();
 
 connect();
 
@@ -129,7 +131,10 @@ function connect() {
           }
 
           if (avatar) {
-            const newURL = `/avatars/${id}?timestamp=${Date.now()}`;
+            const timestampDate = Date.now();
+            userAvatarUpdateTimestamps.set(id, timestampDate);
+
+            const newURL = `/avatars/${id}?timestamp=${timestampDate}`;
             elements.forEach(msg => (msg.children[0].src = newURL));
 
             document.querySelector(`[data-id='${id}']`).children[0].src = newURL;
@@ -246,7 +251,11 @@ function onMessageCreate(message, reference, topMsg) {
   li.setAttribute('data-author', message.author.id);
 
   const img = new Image();
-  img.src = `/avatars/${message.author.id}`;
+  const avatarUpdateTimestamp = userAvatarUpdateTimestamps.get(message.author.id);
+
+  if (!avatarUpdateTimestamp) img.src = `/avatars/${message.author.id}`;
+  else img.src = `/avatars/${message.author.id}?timestamp=${avatarUpdateTimestamp}`;
+  
   img.className = 'avatar';
 
   const div = document.createElement('div');
