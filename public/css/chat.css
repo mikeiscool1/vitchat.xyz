@@ -1,13 +1,14 @@
 #container {
   width: 95%;
-  height: 100vh;
+  height: 100vh; /* fallback */
+  height: 100dvh;
   margin-left: auto;
   display: flex;
 }
 
 #messages-container {
   width: calc(100% - 265px);
-  height: 99%;
+  height: auto;
   margin-right: auto;
   margin-left: auto;
   display: flex;

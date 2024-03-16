@@ -453,7 +453,10 @@ messagesContainer.addEventListener('scroll', async () => {
 });
 
 downArrow.addEventListener('click', async () => {
-  messagesContainer.scrollTo(0, Math.max(messagesContainer.scrollTop + messagesContainer.clientHeight, messagesContainer.scrollHeight - 10000));
+  messagesContainer.scrollTo(
+    0,
+    Math.max(messagesContainer.scrollTop + messagesContainer.clientHeight, messagesContainer.scrollHeight - 10000)
+  );
 
   // Used to check if the user scrolled during the animation, and if they did, cancel the scroll animation
   let lastScrollPos = 0;
@@ -680,7 +683,15 @@ async function sendMessage() {
     });
 
     if (req.status === HttpStatusCodes.RateLimit) alert('Slow down, you are sending messages too fast.');
-    else if (!req.ok) alert('Failed to send message.');
+    else if (!req.ok) {
+      try {
+        const res = await req.json();
+        if (res.message) return alert(res.message);
+        else return alert('Failed to send message.');
+      } catch {
+        return alert('Failed to send message.');
+      }
+    }
   } else {
     const req = await fetch(`/messages/${editingMessage.getAttribute('data-id')}`, {
       method: 'PATCH',

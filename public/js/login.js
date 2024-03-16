@@ -1,4 +1,4 @@
-import { moment } from "./util.js";
+import { moment } from './util.js';
 
 const error = document.getElementById('error');
 const dateEmbedReg = /<date:([A-z0-9:\-.]{1,})>/;
@@ -20,7 +20,10 @@ export async function registerInput() {
     const embededDate = res.message.match(dateEmbedReg);
     if (embededDate) {
       const datePart = embededDate[1];
-      res.message = res.message.slice(0, embededDate.index) + moment(new Date(datePart)) + res.message.slice(embededDate.index + embededDate[0].length);
+      res.message =
+        res.message.slice(0, embededDate.index) +
+        moment(new Date(datePart)) +
+        res.message.slice(embededDate.index + embededDate[0].length);
     }
 
     error.innerHTML = res.message;
@@ -38,4 +41,4 @@ const form = document.getElementById('form');
 form.addEventListener('submit', e => {
   e.preventDefault();
   registerInput();
-})
+});

@@ -165,7 +165,8 @@ banButton.addEventListener('click', async () => {
   clickedButton.innerHTML = 'Unban';
 
   clickedButton.parentNode.setAttribute('data-ban-reason', banReason.value);
-  if (res.suspended_until) clickedButton.parentNode.setAttribute('data-ban-expires', new Date(res.suspended_until).toISOString());
+  if (res.suspended_until)
+    clickedButton.parentNode.setAttribute('data-ban-expires', new Date(res.suspended_until).toISOString());
 
   removeModal(banModal);
   undimBackground(grid);

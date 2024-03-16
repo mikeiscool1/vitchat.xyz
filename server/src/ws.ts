@@ -29,14 +29,13 @@ wss.on('connection', (ws: WebSocket & { id: number }) => {
       if (!user) return ws.close(CloseCodes.AuthenticationFailed);
 
       if (user.state === UserState.Suspended) {
-        if (user.suspended_until && user.suspended_until.getTime() - Date.now() <= 0) 
+        if (user.suspended_until && user.suspended_until.getTime() - Date.now() <= 0)
           await db.user.update({
             where: { id: user.id },
             data: { state: UserState.Active, suspended_reason: null, suspended_until: null }
           });
         else return ws.close(CloseCodes.Forbidden);
-      }
-      else if (user.state === UserState.Waitlist) return ws.close(CloseCodes.Forbidden);
+      } else if (user.state === UserState.Waitlist) return ws.close(CloseCodes.Forbidden);
 
       const clientAlreadyConnected = [...clients.values()].some(c => c.user.id === user.id);
 

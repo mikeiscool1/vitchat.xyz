@@ -49,7 +49,9 @@ app.post('/messages', async (req, res) => {
 
   if (!content) return res.sendStatus(HttpStatusCodes.BadRequest);
   if (content.length > maxContentLength)
-    return res.status(HttpStatusCodes.PayloadTooLarge).send({ message: 'Content too large.' });
+    return res.status(HttpStatusCodes.BadRequest).send({ message: 'Content too large.' });
+  if (content.split('\n').length > 20)
+    return res.status(HttpStatusCodes.BadRequest).send({ message: 'Too many lines.' });
 
   const data = { author_id: user.id, content, id: snowflake.generate() };
   await db.message.create({ data });
@@ -166,7 +168,9 @@ app.patch('/messages/:id', async (req, res) => {
 
   if (!content) return res.sendStatus(HttpStatusCodes.BadRequest);
   if (content.length > maxContentLength)
-    return res.status(HttpStatusCodes.PayloadTooLarge).send({ message: 'Content too large.' });
+    return res.status(HttpStatusCodes.BadRequest).send({ message: 'Content too large.' });
+  if (content.split('\n').length > 20)
+    return res.status(HttpStatusCodes.BadRequest).send({ message: 'Too many lines.' });
 
   let messageId: bigint;
   try {

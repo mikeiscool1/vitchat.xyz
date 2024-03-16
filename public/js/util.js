@@ -1,6 +1,6 @@
 /**
- * 
- * @param {Date} date 
+ *
+ * @param {Date} date
  * @returns {string}
  */
 export function moment(date) {

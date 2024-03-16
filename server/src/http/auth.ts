@@ -61,9 +61,7 @@ export function userAllowed(user: user) {
     return {
       allowed: false,
       message: `This account is suspended${
-        user.suspended_until
-          ? ` until <date:${user.suspended_until.toISOString()}>`
-          : ''
+        user.suspended_until ? ` until <date:${user.suspended_until.toISOString()}>` : ''
       }.<br>Reason: ${user.suspended_reason}`
     };
   }
