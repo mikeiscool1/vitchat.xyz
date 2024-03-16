@@ -255,7 +255,7 @@ function onMessageCreate(message, reference, topMsg) {
 
   if (!avatarUpdateTimestamp) img.src = `/avatars/${message.author.id}`;
   else img.src = `/avatars/${message.author.id}?timestamp=${avatarUpdateTimestamp}`;
-  
+
   img.className = 'avatar';
 
   const div = document.createElement('div');
@@ -453,6 +453,8 @@ messagesContainer.addEventListener('scroll', async () => {
 });
 
 downArrow.addEventListener('click', async () => {
+  messagesContainer.scrollTo(0, Math.max(messagesContainer.scrollTop + messagesContainer.clientHeight, messagesContainer.scrollHeight - 10000));
+
   // Used to check if the user scrolled during the animation, and if they did, cancel the scroll animation
   let lastScrollPos = 0;
   while (true) {
