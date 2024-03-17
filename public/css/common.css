@@ -35,12 +35,21 @@ button:hover {
 }
 
 .admin {
-  color: #ff5f5f;
+  color: #ff5f5f !important;
 }
 
 .link {
   text-decoration: none;
   color: #6993ff
+}
+
+.tag {
+  color: #2ed2ee;
+  font-weight: bold;
+}
+
+.highlight {
+  background-color: #504530;
 }
 
 .error {

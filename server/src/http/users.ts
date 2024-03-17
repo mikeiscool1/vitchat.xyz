@@ -47,16 +47,6 @@ app.post('/users', async (req, res) => {
     }
   });
 
-  broadcast({
-    op: Opcodes.Dispatch,
-    t: EventTypes.UserUpdate,
-    d: {
-      created: true,
-      id: newUser.id.toString(),
-      username
-    }
-  });
-
   return res.sendStatus(HttpStatusCodes.Created);
 });
 
@@ -96,7 +86,13 @@ app.get('/users', async (req, res) => {
   const allowed = userAllowed(user);
   if (!allowed.allowed) return res.status(HttpStatusCodes.Forbidden).send(allowed.message);
 
-  const users = await db.user.findMany();
+  const users = await db.user.findMany({
+    where: {
+      state: {
+        not: UserState.Waitlist
+      }
+    }
+  });
   const onlineUsers = [...clients.values()].map(c => c.user.id);
 
   const data = users
@@ -267,6 +263,17 @@ app.patch('/users-admin/:id', async (req, res) => {
       where: { id: userId },
       data: { state, suspended_reason: null, suspended_until: null }
     });
+
+    if (targetUser.state === UserState.Waitlist)
+      broadcast({
+        op: Opcodes.Dispatch,
+        t: EventTypes.UserUpdate,
+        d: {
+          created: true,
+          id: updatedUser.id.toString(),
+          username: updatedUser.username
+        }
+      });
 
     return res.send({
       id: updatedUser.id.toString(),

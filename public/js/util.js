@@ -27,6 +27,8 @@ export function snowflakeDate(snowflake) {
   return new Date(Number(timestamp));
 }
 
+// the following two functions encodeHtml and decodeHtml are for encoded CHARACTERS, NOT tags
+// This is to convert < into &lt; and &lt; to <, NOT to convert <span>tset</span> to test
 export function encodeHtml(rawStr) {
   return rawStr.replace(/[\u00A0-\u9999<>\&]/g, i => `&#${i.charCodeAt(0)};`).replaceAll('\n', '<br>');
 }

@@ -3,6 +3,8 @@ import { Opcodes, CloseCodes, EventTypes, HttpStatusCodes } from './constants.js
 const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 
 export const messagesContainer = document.getElementById('messages');
+const onlineList = document.getElementById('online-list');
+const offlineList = document.getElementById('offline-list');
 
 const token = getCookie('token');
 if (!token) window.location.href = '/login';
@@ -93,7 +95,7 @@ function connect() {
         if ((new_presence === 'ONLINE' && liIsOnline) || (new_presence === 'OFFLINE' && !liIsOnline)) return;
 
         const moveTo =
-          new_presence === 'ONLINE' ? document.getElementById('online-list') : document.getElementById('offline-list');
+          new_presence === 'ONLINE' ? onlineList : offlineList;
 
         // insert it alphabetically
         const beforeElement = [...moveTo.children].find(
@@ -236,6 +238,8 @@ function onMessageCreate(message, reference, topMsg) {
   else if (reference !== 'first') lastLi = reference;
 
   message.content = format(encodeHtml(message.content));
+  const youAreTaggedReg = new RegExp(`<span class="tag (admin)?">@${me.username}</span>`);
+  const youAreTagged = youAreTaggedReg.test(message.content);
 
   if (lastLi && message.author.id === lastLi.getAttribute('data-author')) {
     // stack the messages
@@ -243,6 +247,7 @@ function onMessageCreate(message, reference, topMsg) {
     p.className = 'content';
     p.innerHTML = message.content;
     p.setAttribute('data-id', message.id);
+    if (youAreTagged) p.classList.add('highlight');
     lastLi.children[1].appendChild(p);
     return;
   }
@@ -274,6 +279,7 @@ function onMessageCreate(message, reference, topMsg) {
   p.innerHTML = message.content;
   p.className = 'first content';
   p.setAttribute('data-id', message.id);
+  if (youAreTagged) p.classList.add('highlight');
 
   div.append(username, timestamp, p);
   li.append(img, div);
@@ -293,37 +299,56 @@ const urlReg = /https?:\/\/(?:[A-z0-9](?:[A-z0-9-]{0,61}[A-z0-9])?\.)+[A-z0-9][A
 function format(content) {
   // encoding to turn two backslashes (\\) into escape character + b (for backslash)
   // used to support the following regex
-  content = content.replaceAll('\\\\', `\x1bb`);
+  content = content.replaceAll('\\\\', `\u200C${'\\'.charCodeAt(0)};`);
 
   // now due to the previous regex, \\_ can be ignored
-  // now encode \_ and \* so they are ignored by the following regexes
-  content = content.replace(/(?<!\\)\\(\*|_)/g, match => {
-    const encoding = match.at(-1) === '_' ? 'u' : 'a'; // underscore : astericks
-    return `\x1b${encoding}`;
+  content = content.replace(/(?<!\\)\\./g, match => {
+    const encoding = match.charCodeAt(1);
+    return `\u200C${encoding};`;
   });
 
+  // bold
   content = content.replace(/\*\*[^*]{1,}\*\*/g, match => `<b>${match.slice(2, -2)}</b>`);
+  // underline
   content = content.replace(/__[^_]{1,}__/g, match => `<u>${match.slice(2, -2)}</u>`);
+  // italic
   content = content.replace(/_[^_]{1,}_/g, match => `<i>${match.slice(1, -1)}</i>`);
+  // links
   content = content.replace(urlReg, match => `<a class="link" target="_blank" href="${match}">${match}</a>`);
+  // tags
+  content = content.replace(/@[^ ]{1,}/g, match => {
+    // check if tag is real user
+    const username = match.slice(1);
+    const usernameElement = [...onlineList.children, ...offlineList.children].find(c => c.children[1].innerHTML === username);
+
+    if (!usernameElement) return match;
+
+    return `<span class="tag ${usernameElement.children[1].classList.contains('admin') ? 'admin' : ''}">${match}</span>`;
+  })
 
   // now decode the encodings made before
-  content = content.replaceAll('\x1bb', '\\').replaceAll('\x1bu', '_').replaceAll('\x1ba', '*');
+  // keep the escape character so it can be unformatted with the backslash.
+  content = content.replace(/\u200C[0-9]{1,};/g, match => {
+    const char = String.fromCharCode(match.slice(1, -1));
+    return `\u200C${char}`;
+  })
 
   return content;
 }
 
+const tagToFmtWrapper = Object.entries({
+  a: '',
+  span: '',
+  b: '**',
+  u: '__',
+  i: '_'
+});
 /**
  * Revert HTML to the formatting used to get that HTML
  * @param {string} html
  */
 function unformat(html) {
-  const tagToFmtWrapper = Object.entries({
-    a: '',
-    b: '**',
-    u: '__',
-    i: '_'
-  });
+  html = html.replaceAll('<br>', '\n');
 
   for (const [tag, wrapper] of tagToFmtWrapper) {
     const regex = new RegExp(`<${tag}.*>.*<\/${tag}>`);
@@ -332,6 +357,8 @@ function unformat(html) {
       match => `${wrapper}${match.slice(match.indexOf('>') + 1, match.lastIndexOf('<'))}${wrapper}`
     );
   }
+
+  html = html.replaceAll('\u200C', '\\');
 
   return html;
 }
@@ -357,9 +384,6 @@ async function onConnect() {
   const users = await usersReq.json();
 
   if (!usersReq.ok) return console.log(users);
-
-  const onlineList = document.getElementById('online-list');
-  const offlineList = document.getElementById('offline-list');
 
   const onlineCountSpan = document.getElementById('online-count');
   const offlineCountSpan = document.getElementById('offline-count');
@@ -609,9 +633,9 @@ messagesContainer.addEventListener('contextmenu', e => {
     deleteMessageOption.style.display = 'block';
   else deleteMessageOption.style.display = 'none';
 
-  messageOptions.style.top = e.y + 'px';
-  messageOptions.style.left = e.x + 'px';
   messageOptions.style.display = 'block';
+  messageOptions.style.top = Math.min(e.y, window.innerHeight - messageOptions.style.height - 150) + 'px';
+  messageOptions.style.left = e.x + messageOptions.offsetWidth / 2 + 'px';
 });
 
 messageOptions.addEventListener('click', async e => {
@@ -635,7 +659,7 @@ messageOptions.addEventListener('click', async e => {
       break;
     case 'edit':
       messageInput.setAttribute('placeholder', 'Editing...');
-      messageInput.value = unformat(decodeHtml(selectedMessage.innerHTML));
+      messageInput.value = decodeHtml(unformat(selectedMessage.innerHTML));
       adjustMessageInputHeight();
       editingMessage = selectedMessage;
       editingMessage.style.backgroundColor = '#141422';
@@ -644,13 +668,18 @@ messageOptions.addEventListener('click', async e => {
       break;
     case 'copy text':
       const textArea = document.createElement('textarea');
-      textArea.value = unformat(decodeHtml(selectedMessage.innerHTML));
+      textArea.value = decodeHtml(unformat(selectedMessage.innerHTML));
       textArea.style.position = 'fixed'; // Ensure it's not visible
       document.body.appendChild(textArea);
       textArea.focus();
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
+      break;
+    case 'reply':
+      const username = selectedMessage.parentNode.children[0].innerHTML;
+      messageInput.value = `> ___${decodeHtml(unformat(selectedMessage.innerHTML).replaceAll('_', '\\_'))}___\n@${username} `;
+      adjustMessageInputHeight()
       break;
     case 'cancel':
       break;
