@@ -23,13 +23,21 @@ const userAvatarUpdateTimestamps = new Map();
 
 connect();
 
+let heartbeatInterval;
 function connect() {
   let ws = new WebSocket(`${wsProtocol}//${location.host}`);
 
-  ws.addEventListener('open', () => {
+  ws.onopen = () => {
     console.log('Connected.');
     ws.send(JSON.stringify({ op: Opcodes.Identify, d: { authorization: token } }));
-  });
+
+    // start heartbeat interval to maintain connection
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+
+    heartbeatInterval = setInterval(() => {
+      ws.send(JSON.stringify({ op: Opcodes.Heartbeat }));
+    }, 20000);
+  };
 
   // username: time typing began
   const typingUsers = new Map();
@@ -67,7 +75,7 @@ function connect() {
 
   setInterval(updateTyping, 250);
 
-  ws.addEventListener('message', async message => {
+  ws.onmessage = async message => {
     /**
      * @type {{ op: number, d?: any, t?: number }}
      */
@@ -209,20 +217,19 @@ function connect() {
         break;
       }
     }
-  });
+  };
 
   const noReconnectCodes = [CloseCodes.Forced, CloseCodes.Forbidden, CloseCodes.AuthenticationFailed];
-  ws.addEventListener('close', e => {
+  ws.onclose = e => {
     console.log(e);
 
     if (e.code === CloseCodes.Forced) return (window.location.href = '/');
-
     if (noReconnectCodes.includes(e.code)) return (window.location.href = '/');
 
     setTimeout(() => {
       connect();
     }, 5000);
-  });
+  };
 }
 
 /**
