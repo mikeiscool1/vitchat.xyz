@@ -291,13 +291,24 @@ const urlReg = /https?:\/\/(?:[A-z0-9](?:[A-z0-9-]{0,61}[A-z0-9])?\.)+[A-z0-9][A
  * @param {string} content
  */
 function format(content) {
-  // invisible character preventing the character from being detected as part as formatting
-  content = content.replace(/\\./g, match => `${match[1]}&zwnj;`);
+  // encoding to turn two backslashes (\\) into escape character + b (for backslash)
+  // used to support the following regex
+  content = content.replaceAll('\\\\', `\x1bb`);
+
+  // now due to the previous regex, \\_ can be ignored
+  // now encode \_ and \* so they are ignored by the following regexes
+  content = content.replace(/(?<!\\)\\(\*|_)/g, match => {
+    const encoding = match.at(-1) === '_' ? 'u' : 'a'; // underscore : astericks
+    return `\x1b${encoding}`;
+  });
 
   content = content.replace(/\*\*[^*]{1,}\*\*/g, match => `<b>${match.slice(2, -2)}</b>`);
   content = content.replace(/__[^_]{1,}__/g, match => `<u>${match.slice(2, -2)}</u>`);
   content = content.replace(/_[^_]{1,}_/g, match => `<i>${match.slice(1, -1)}</i>`);
   content = content.replace(urlReg, match => `<a class="link" target="_blank" href="${match}">${match}</a>`);
+
+  // now decode the encodings made before
+  content = content.replaceAll('\x1bb', '\\').replaceAll('\x1bu', '_').replaceAll('\x1ba', '*');
 
   return content;
 }
@@ -313,9 +324,6 @@ function unformat(html) {
     u: '__',
     i: '_'
   });
-
-  // 200C is zero width character (&zwnj;)
-  html = html.replace(/.\u200C/g, match => `\\${match}`);
 
   for (const [tag, wrapper] of tagToFmtWrapper) {
     const regex = new RegExp(`<${tag}.*>.*<\/${tag}>`);
@@ -415,6 +423,8 @@ async function onConnect() {
 let waitLoadMore = false;
 const downArrow = document.getElementById('down-arrow');
 messagesContainer.addEventListener('scroll', async () => {
+  if (messagesContainer.scrollTop < 0) return messagesContainer.scrollTo(0, 0);
+
   if (messagesContainer.scrollTop + messagesContainer.clientHeight >= messagesContainer.scrollHeight) {
     downArrow.style.display = 'none';
   } else downArrow.style.display = 'block';
