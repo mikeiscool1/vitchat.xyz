@@ -40,6 +40,8 @@ app.patch('/avatars/:id', upload.single('file'), async (req, res) => {
     return res.sendStatus(HttpStatusCodes.BadRequest);
   }
 
+  if (user.id !== userId) return res.sendStatus(HttpStatusCodes.Forbidden);
+
   const { file, type } = req.body;
 
   if (!file || !type || typeof file !== 'string' || typeof type !== 'string' || type.length > 50)
