@@ -20,10 +20,10 @@ if (!token) window.location.href = '/login';
 let me;
 // when a user updates their avatar, their avatar URLs must use a timestamp due to caching
 const userAvatarUpdateTimestamps = new Map();
+let heartbeatInterval;
+let updateTypingInterval;
 
 connect();
-
-let heartbeatInterval;
 function connect() {
   let ws = new WebSocket(`${wsProtocol}//${location.host}`);
 
@@ -73,7 +73,8 @@ function connect() {
     else typingDots.innerHTML += '.';
   }
 
-  setInterval(updateTyping, 250);
+  if (updateTypingInterval) clearInterval(updateTypingInterval);
+  updateTypingInterval = setInterval(updateTyping, 250);
 
   ws.onmessage = async message => {
     /**
@@ -213,6 +214,7 @@ function connect() {
       case EventTypes.TypingStart: {
         if (payload.username === me.username) return;
         typingUsers.set(payload.username, Date.now());
+        updateTyping();
 
         break;
       }
@@ -686,6 +688,8 @@ messageOptions.addEventListener('click', async e => {
     case 'reply':
       const username = selectedMessage.parentNode.children[0].innerHTML;
       messageInput.value = `> ___${decodeHtml(unformat(selectedMessage.innerHTML).replaceAll('_', '\\_'))}___\n@${username} `;
+      messageInput.focus();
+      messageInput.setSelectionRange(messageInput.value.length, messageInput.value.length);
       adjustMessageInputHeight()
       break;
     case 'cancel':
@@ -714,6 +718,13 @@ async function sendMessage() {
   const content = messageInput.value.trim();
   if (content.length === 0) return;
   if (content.length > 2000) return alert('Message exceeds 2000 character limit.');
+
+  const messageInputValue = messageInput.value;
+  messageInput.value = '';
+  adjustMessageInputHeight();
+
+  const resetInput = () => { messageInput.value = messageInputValue; adjustMessageInputHeight(); }
+
   if (!editingMessage) {
     const req = await fetch('/messages', {
       method: 'POST',
@@ -725,16 +736,23 @@ async function sendMessage() {
         content
       })
     }).catch(() => {
+      resetInput();
       alert('Failed to send message. Try refreshing your page.');
     });
 
-    if (req.status === HttpStatusCodes.RateLimit) alert('Slow down, you are sending messages too fast.');
+    if (req.status === HttpStatusCodes.RateLimit) {
+      resetInput();
+      return alert('Slow down, you are sending messages too fast.');
+    }
     else if (!req.ok) {
       try {
         const res = await req.json();
+        resetInput();
+
         if (res.message) return alert(res.message);
         else return alert('Failed to send message.');
       } catch {
+        resetInput();
         return alert('Failed to send message.');
       }
     }
@@ -749,6 +767,7 @@ async function sendMessage() {
         content
       })
     }).catch(() => {
+      resetInput();
       alert('Failed to edit message. Try refreshing your page.');
     });
 
@@ -757,10 +776,9 @@ async function sendMessage() {
     messageInput.setAttribute('placeholder', 'Message...');
     editingAlert.classList.add('d-none');
 
-    if (!req.ok) alert('Failed to edit message.');
+    if (!req.ok) {
+      resetInput();
+      return alert('Failed to edit message.');
+    }
   }
-
-  messageInput.value = '';
-  messageInput.rows = 1;
-  messageInput.style.height = 'auto';
 }
