@@ -103,8 +103,7 @@ function connect() {
 
         if ((new_presence === 'ONLINE' && liIsOnline) || (new_presence === 'OFFLINE' && !liIsOnline)) return;
 
-        const moveTo =
-          new_presence === 'ONLINE' ? onlineList : offlineList;
+        const moveTo = new_presence === 'ONLINE' ? onlineList : offlineList;
 
         // insert it alphabetically
         const beforeElement = [...moveTo.children].find(
@@ -328,19 +327,23 @@ function format(content) {
   content = content.replace(/@[^ ]{1,}/g, match => {
     // check if tag is real user
     const username = match.slice(1);
-    const usernameElement = [...onlineList.children, ...offlineList.children].find(c => c.children[1].innerHTML === username);
+    const usernameElement = [...onlineList.children, ...offlineList.children].find(
+      c => c.children[1].innerHTML === username
+    );
 
     if (!usernameElement) return match;
 
-    return `<span class="tag ${usernameElement.children[1].classList.contains('admin') ? 'admin' : ''}">${match}</span>`;
-  })
+    return `<span class="tag ${
+      usernameElement.children[1].classList.contains('admin') ? 'admin' : ''
+    }">${match}</span>`;
+  });
 
   // now decode the encodings made before
   // keep the escape character so it can be unformatted with the backslash.
   content = content.replace(/\u200C[0-9]{1,};/g, match => {
     const char = String.fromCharCode(match.slice(1, -1));
     return `\u200C${char}`;
-  })
+  });
 
   return content;
 }
@@ -687,10 +690,12 @@ messageOptions.addEventListener('click', async e => {
       break;
     case 'reply':
       const username = selectedMessage.parentNode.children[0].innerHTML;
-      messageInput.value = `> ___${decodeHtml(unformat(selectedMessage.innerHTML).replaceAll('_', '\\_'))}___\n@${username} `;
+      messageInput.value = `> ___${decodeHtml(
+        unformat(selectedMessage.innerHTML).replaceAll('_', '\\_')
+      )}___\n@${username} `;
       messageInput.focus();
       messageInput.setSelectionRange(messageInput.value.length, messageInput.value.length);
-      adjustMessageInputHeight()
+      adjustMessageInputHeight();
       break;
     case 'cancel':
       break;
@@ -723,7 +728,10 @@ async function sendMessage() {
   messageInput.value = '';
   adjustMessageInputHeight();
 
-  const resetInput = () => { messageInput.value = messageInputValue; adjustMessageInputHeight(); }
+  const resetInput = () => {
+    messageInput.value = messageInputValue;
+    adjustMessageInputHeight();
+  };
 
   if (!editingMessage) {
     const req = await fetch('/messages', {
@@ -743,8 +751,7 @@ async function sendMessage() {
     if (req.status === HttpStatusCodes.RateLimit) {
       resetInput();
       return alert('Slow down, you are sending messages too fast.');
-    }
-    else if (!req.ok) {
+    } else if (!req.ok) {
       try {
         const res = await req.json();
         resetInput();
