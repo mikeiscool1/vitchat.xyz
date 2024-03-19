@@ -363,7 +363,7 @@ function unformat(html) {
   html = html.replaceAll('<br>', '\n');
 
   for (const [tag, wrapper] of tagToFmtWrapper) {
-    const regex = new RegExp(`<${tag}.*>.*<\/${tag}>`);
+    const regex = new RegExp(`<${tag}[^>]*>[^>]*<\/${tag}>`, 'g');
     html = html.replace(
       regex,
       match => `${wrapper}${match.slice(match.indexOf('>') + 1, match.lastIndexOf('<'))}${wrapper}`
