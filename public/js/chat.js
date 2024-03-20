@@ -299,15 +299,29 @@ function onMessageCreate(message, reference, topMsg) {
   }
 }
 
-const urlReg = /https?:\/\/(?:[A-z0-9](?:[A-z0-9-]{0,61}[A-z0-9])?\.)+[A-z0-9][A-z0-9-]{0,61}[A-z0-9][A-z0-9-\/]*/g;
+const urlReg = /https?:\/\/(?:[A-z0-9](?:[A-z0-9-]{0,61}[A-z0-9])?\.)+[A-z0-9][A-z0-9-]{0,61}[^ ]*/g;
+// ; = keep escape character, ] = do not keep.
+const escapeChars = {
+  backslash: `\u200C${'\\'.charCodeAt(0)};`,
+  underline: `\u200C${'_'.charCodeAt(0)}]`
+}
+
 /**
  * Format a message
  * @param {string} content
  */
 function format(content) {
+  // links
+  // underlines have to be escaped to prevent the following formatters from formatting the URL.
+  content = content.replace(urlReg, match => {
+    match = match.replaceAll('_', escapeChars.underline);
+    match = match.replaceAll('\\', '/');
+    return `<a class="link" target="${escapeChars.underline}blank" href="${match}">${match.replaceAll('_', escapeChars.underline)}</a>`;
+  });
+
   // encoding to turn two backslashes (\\) into escape character + b (for backslash)
   // used to support the following regex
-  content = content.replaceAll('\\\\', `\u200C${'\\'.charCodeAt(0)};`);
+  content = content.replaceAll('\\\\', escapeChars.backslash);
 
   // now due to the previous regex, \\_ can be ignored
   content = content.replace(/(?<!\\)\\./g, match => {
@@ -321,8 +335,6 @@ function format(content) {
   content = content.replace(/__[^_]{1,}__/g, match => `<u>${match.slice(2, -2)}</u>`);
   // italic
   content = content.replace(/_[^_]{1,}_/g, match => `<i>${match.slice(1, -1)}</i>`);
-  // links
-  content = content.replace(urlReg, match => `<a class="link" target="_blank" href="${match}">${match}</a>`);
   // tags
   content = content.replace(/@[^ ]{1,}/g, match => {
     // check if tag is real user
@@ -340,8 +352,10 @@ function format(content) {
 
   // now decode the encodings made before
   // keep the escape character so it can be unformatted with the backslash.
-  content = content.replace(/\u200C[0-9]{1,};/g, match => {
+  // ; = keep escape character, ] = do not keep.
+  content = content.replace(/\u200C[0-9]{1,}(;|])/g, match => {
     const char = String.fromCharCode(match.slice(1, -1));
+    if (match.endsWith(']')) return char;
     return `\u200C${char}`;
   });
 
@@ -360,6 +374,7 @@ const tagToFmtWrapper = Object.entries({
  * @param {string} html
  */
 function unformat(html) {
+  console.log(html);
   html = html.replaceAll('<br>', '\n');
 
   for (const [tag, wrapper] of tagToFmtWrapper) {
