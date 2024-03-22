@@ -45,9 +45,10 @@ app.post('/messages', async (req, res) => {
   }
 
   let { content }: { content: string } = req.body;
+
+  if (!content || typeof content !== 'string') return res.sendStatus(HttpStatusCodes.BadRequest);
   content = content.trim();
 
-  if (!content) return res.sendStatus(HttpStatusCodes.BadRequest);
   if (content.length > maxContentLength)
     return res.status(HttpStatusCodes.BadRequest).send({ message: 'Content too large.' });
   if (content.split('\n').length > 20)
@@ -164,9 +165,9 @@ app.patch('/messages/:id', async (req, res) => {
   if (!allowed.allowed) return res.status(HttpStatusCodes.Forbidden).send(allowed.message);
 
   let { content }: { content: string } = req.body;
+  if (!content || typeof content !== 'string') return res.sendStatus(HttpStatusCodes.BadRequest);
   content = content.trim();
-
-  if (!content) return res.sendStatus(HttpStatusCodes.BadRequest);
+  
   if (content.length > maxContentLength)
     return res.status(HttpStatusCodes.BadRequest).send({ message: 'Content too large.' });
   if (content.split('\n').length > 20)
