@@ -374,7 +374,6 @@ const tagToFmtWrapper = Object.entries({
  * @param {string} html
  */
 function unformat(html) {
-  console.log(html);
   html = html.replaceAll('<br>', '\n');
 
   for (const [tag, wrapper] of tagToFmtWrapper) {
@@ -687,6 +686,8 @@ messageOptions.addEventListener('click', async e => {
     case 'edit':
       messageInput.setAttribute('placeholder', 'Editing...');
       messageInput.value = decodeHtml(unformat(selectedMessage.innerHTML));
+      messageInput.focus();
+      messageInput.setSelectionRange(messageInput.value.length, messageInput.value.length);
       adjustMessageInputHeight();
       editingMessage = selectedMessage;
       editingMessage.style.backgroundColor = '#141422';
