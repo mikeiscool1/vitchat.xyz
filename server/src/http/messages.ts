@@ -71,7 +71,11 @@ app.post('/messages', async (req, res) => {
     }
   });
 
-  const serializedData = { id: data.id.toString(), author_id: user.id.toString(), content };
+  const serializedData = {
+    id: data.id.toString(),
+    content,
+    author: { id: user.id.toString(), username: user.username, admin: user.admin }
+  };
   return res.send(serializedData);
 });
 
@@ -167,7 +171,7 @@ app.patch('/messages/:id', async (req, res) => {
   let { content }: { content: string } = req.body;
   if (!content || typeof content !== 'string') return res.sendStatus(HttpStatusCodes.BadRequest);
   content = content.trim();
-  
+
   if (content.length > maxContentLength)
     return res.status(HttpStatusCodes.BadRequest).send({ message: 'Content too large.' });
   if (content.split('\n').length > 20)
@@ -204,7 +208,12 @@ app.patch('/messages/:id', async (req, res) => {
     }
   });
 
-  return res.send({ id: req.params.id, author_id: user.id.toString(), content });
+  const serializedData = {
+    id: req.params.id,
+    content,
+    author: { id: user.id.toString(), username: user.username, admin: user.admin }
+  };
+  return res.send(serializedData);
 });
 
 app.post('/typing', async (req, res) => {
