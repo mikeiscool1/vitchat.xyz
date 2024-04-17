@@ -336,7 +336,7 @@ function format(content) {
   // italic
   content = content.replace(/_[^_]{1,}_/g, match => `<i>${match.slice(1, -1)}</i>`);
   // tags
-  content = content.replace(/@[^ ]{1,}/g, match => {
+  content = content.replace(/@[^ <]{1,}/g, match => {
     // check if tag is real user
     const username = match.slice(1);
     const usernameElement = [...onlineList.children, ...offlineList.children].find(
