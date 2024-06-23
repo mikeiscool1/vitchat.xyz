@@ -11,7 +11,7 @@ app.post('/auth', async (req, res) => {
   if (typeof username !== 'string' || typeof password !== 'string') return res.sendStatus(HttpStatusCodes.BadRequest);
 
   const user = await db.user.findUnique({ where: { username } });
-  if (!user) return res.status(HttpStatusCodes.Unauthorized).send({ message: 'Invalid name or password.' });
+  if (!user) return res.status(HttpStatusCodes.Unauthorized).send({ message: 'Invalid username or password.' });
 
   const { salt, password_hash, token } = user;
 
@@ -20,7 +20,7 @@ app.post('/auth', async (req, res) => {
     .update(password + salt)
     .digest();
   if (!hash.equals(password_hash))
-    return res.status(HttpStatusCodes.Unauthorized).send({ message: 'Invalid name or password.' });
+    return res.status(HttpStatusCodes.Unauthorized).send({ message: 'Invalid username or password.' });
 
   const allowed = userAllowed(user);
   if (!allowed.allowed) return res.status(HttpStatusCodes.Forbidden).send({ message: allowed.message });

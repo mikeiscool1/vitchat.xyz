@@ -13,6 +13,12 @@
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
 }
 
+img {
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+}
+
 #grid {
   width: 90%;
   margin-left: auto;

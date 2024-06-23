@@ -76,6 +76,7 @@ export async function sleep(ms) {
 export function dimBackground(element) {
   element.style.filter = 'brightness(30%)';
   element.style.pointerEvents = 'none';
+  element.style.
   element.style.userSelect = 'none';
 }
 
