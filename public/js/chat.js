@@ -457,6 +457,8 @@ async function onConnect() {
 
   if (!messagesReq.ok) return console.log(messages);
 
+  messagesContainer.innerHTML = '';
+
   for (const msg of messages) onMessageCreate(msg);
 
   if (me.admin) document.getElementById('delete-message-option').style.display = 'block';
