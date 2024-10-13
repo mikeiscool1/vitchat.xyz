@@ -454,12 +454,15 @@ async function onConnect() {
   });
 
   const messages = await messagesReq.json();
+  console.log(messages);
 
   if (!messagesReq.ok) return console.log(messages);
 
   messagesContainer.innerHTML = '';
 
-  for (const msg of messages) onMessageCreate(msg);
+  for (const msg of messages) {
+    onMessageCreate(msg);
+  }
 
   if (me.admin) document.getElementById('delete-message-option').style.display = 'block';
   if (isMobile()) {
@@ -503,6 +506,7 @@ messagesContainer.addEventListener('scroll', async () => {
   const beforeScrollHeight = messagesContainer.scrollHeight;
 
   const topMsg = messagesContainer.firstChild;
+  console.log("Loading messages?")
   onMessageCreate(messages[0], 'first');
   for (let i = 1; i < messages.length; i++) {
     const refMessage = topMsg.previousSibling;

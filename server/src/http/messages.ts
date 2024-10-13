@@ -119,7 +119,7 @@ app.get('/messages', async (req, res) => {
     ORDER BY message.id DESC
     LIMIT ${messagesPerFetch}
   ) AS msgs
-  ORDER BY id ASC`;
+  ORDER BY CAST(id AS BIGINT) ASC`;
 
   return res.send(messages);
 });
