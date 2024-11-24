@@ -50,11 +50,20 @@
 
 #logout {
   background-color: rgb(205, 1, 1);
+  margin-right: 10px;
 }
 
-#logout > a {
+#back {
+  background-color: #005eff;
+}
+
+#bottom-settings-buttons > button > a {
   text-decoration: none;
   color: white;
+}
+
+#bottom-settings-buttons > button {
+  width: 100px;
 }
 
 .update-modal-button {
